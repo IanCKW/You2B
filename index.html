@@ -1,135 +1,210 @@
 <script>
-    var GoogleAuth;
-    var SCOPE = 'https://www.googleapis.com/auth/youtube.force-ssl';
-    function handleClientLoad() {
-        // Load the API's client and auth2 modules.
-        // Call the initClient function after the modules load.
-        gapi.load('client:auth2', initClient);
+
+
+    ///////////////////////////////////////////////////////////
+    ////You can ignore this part and skip to Additions made////
+    ///////////////////////////////////////////////////////////
+
+
+  var GoogleAuth;
+  var SCOPE = 'https://www.googleapis.com/auth/youtube.force-ssl';
+
+  function handleClientLoad() {
+    // Load the API's client and auth2 modules.
+    // Call the initClient function after the modules load.
+    gapi.load('client:auth2', initClient);
+  }
+
+  function initClient() {
+    // Retrieve the discovery document for version 3 of YouTube Data API.
+    // In practice, your app can retrieve one or more discovery documents.
+    var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
+
+    // Initialize the gapi.client object, which app uses to make API requests.
+    // Get API key and client ID from API Console.
+    // 'scope' field specifies space-delimited list of access scopes.
+    gapi.client.init({
+      'apiKey': 'AIzaSyD6UY9bt7SPPaWzARhXfHqT9DDx1PWlMIg',
+      'discoveryDocs': [discoveryUrl],
+      'clientId': '405925348712-3qhaotvfjc3fao883c5o9d8a2tfu0pij.apps.googleusercontent.com',
+      'scope': SCOPE
+    }).then(function() {
+      GoogleAuth = gapi.auth2.getAuthInstance();
+
+      // Listen for sign-in state changes.
+      GoogleAuth.isSignedIn.listen(updateSigninStatus);
+
+      // Handle initial sign-in state. (Determine if user is already signed in.)
+      var user = GoogleAuth.currentUser.get();
+      setSigninStatus();
+
+      // Call handleAuthClick function when user clicks on
+      //      "Sign In" button.
+      $('#sign-in-or-out-button').click(function() {
+        handleAuthClick();
+      });
+    });
+  }
+
+  function handleAuthClick() {
+    if (GoogleAuth.isSignedIn.get()) {
+      // User is authorized and has clicked 'Sign out' button.
+      GoogleAuth.signOut();
+    } else {
+      // User is not signed in. Start Google auth flow.
+      GoogleAuth.signIn();
     }
+  }
 
-    function initClient() {
-        // Retrieve the discovery document for version 3 of YouTube Data API.
-        // In practice, your app can retrieve one or more discovery documents.
-        var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
-
-        // Initialize the gapi.client object, which app uses to make API requests.
-        // Get API key and client ID from API Console.
-        // 'scope' field specifies space-delimited list of access scopes.
-        gapi.client.init({
-            'apiKey': 'AIzaSyD5WHoLdfOMOno9nN1ZRR_twGKcAl1686k',
-            'discoveryDocs': [discoveryUrl],
-            'clientId': '710841158565-san5fuffg1rp5ejlqdieacvpad2t6pla.apps.googleusercontent.com',
-            'scope': SCOPE
-        }).then(function () {
-            GoogleAuth = gapi.auth2.getAuthInstance();
-
-            // Listen for sign-in state changes.
-            GoogleAuth.isSignedIn.listen(updateSigninStatus);
-
-            // Handle initial sign-in state. (Determine if user is already signed in.)
-            var user = GoogleAuth.currentUser.get();
-            setSigninStatus();
-
-            // Call handleAuthClick function when user clicks on
-            //      "Sign In" button.
-            $('#sign-in-or-out-button').click(function() {
-                handleAuthClick();
-            });
-        });
+  function setSigninStatus(isSignedIn) {
+    var user = GoogleAuth.currentUser.get();
+    var isAuthorized = user.hasGrantedScopes(SCOPE);
+    if (isAuthorized) {
+      $('#sign-in-or-out-button').html('Sign out');
+    } else {
+      $('#sign-in-or-out-button').html('Sign In');
     }
+    get_subscriptions();
+  }
 
-	function get_uploads(pid) {
-		var rq = {
-			part: 'snippet,contentDetails',
-			playlistId: pid,
-			maxResults: 50
-		};
+  function updateSigninStatus(isSignedIn) {
+    setSigninStatus();
+  }
 
-		var request = gapi.client.youtube.playlistItems.list(rq);
 
-		request.execute(function(response) {
-			var itm = response.items[0];
 
-			var thumb = itm.snippet.thumbnails.medium;
-			var link = "<a href='https://www.youtube.com/watch?v=" + itm.snippet.resourceId.videoId + "' target='_blank'>";
-			var img = "<img src='" + thumb.url + "' width=" + thumb.width + " height=" + thumb.height + ">";
-			var end_link = "</a>";
 
-			$('#results').append(link + img + end_link);
-		});
-	}
 
-	function get_channel(cid) {
-		var request = gapi.client.youtube.channels.list({
-			part: 'snippet,contentDetails,statistics',
-			id: cid
-		});
-		request.execute(function(response) {
-			var channels = response.items;
-			if (channels.length == 0) {
-				console.log('No channel found.');
-			} else {
-				get_uploads(channels[0].contentDetails.relatedPlaylists.uploads);
-			}
-		});
-	}
 
-	function get_subscriptions(token) {
-		var rq = {
-			part: 'id,contentDetails,subscriberSnippet,snippet',
-			mine: true,
-			maxResults: 50
-		};
-		if (token) {
-			rq.pageToken = token;
-		}
-		var request = gapi.client.youtube.subscriptions.list(rq);
 
-		request.execute(function(response) {
-			for (var i = 0; i < response.items.length; i++) {
-				var itm = response.items[i];
-				var cid = itm.snippet.resourceId.channelId;
-				get_channel(cid);
-			}
 
-			var next = response.nextPageToken;
-			if (next) {
-				get_subscriptions(next);
-			}
-		});
-	}
+  /////////////////////
+  ////Additions made///
+  /////////////////////
 
-    function handleAuthClick() {
-        if (GoogleAuth.isSignedIn.get()) {
-            // User is authorized and has clicked 'Sign out' button.
-            GoogleAuth.signOut();
-        } else {
-            // User is not signed in. Start Google auth flow.
-            GoogleAuth.signIn();
+
+  var uploads = [];// creating an array for the uploads in a channel
+
+
+  function get_subscriptions(token) {
+
+    var rq = {
+      part: 'id,contentDetails,subscriberSnippet,snippet',
+      mine: true,
+      maxResults: 50
+    };
+    if (token) { // If we got a token from previous call
+      rq.pageToken = token; // .. attach it to the new request
+    }
+    var request = gapi.client.youtube.subscriptions.list(rq);
+
+    request.execute(function(response) { //API ref for navigating channel: https://developers.google.com/youtube/v3/docs/channels
+      for (var i = 0; i < response.items.length; i++) {
+        var itm = response.items[i];
+        var cid = itm.snippet.resourceId.channelId; //we optain the channel id
+        get_channel(cid);
+      }
+
+      var next = response.nextPageToken; // get token for next page
+      if (next) { // if has next
+        get_subscriptions(next); // recurse with the new token
+      }
+    });
+    display_uploads();
+  }
+
+  function get_channel(cid) { // input it here
+
+    var request = gapi.client.youtube.channels.list({
+      part: 'snippet,contentDetails,statistics',
+      id: cid
+    }); //the request now has that specific channel's data
+    request.execute(function(response) {
+      var channels = response.items;
+      if (channels.length == 0) {
+      } else { //why channels[0]??? maybe its just an array with one element?
+        get_uploads(channels[0].contentDetails.relatedPlaylists.uploads);
+      }
+
+    });
+  }
+
+
+  function get_uploads(pid) {
+    var rq = {
+      part: 'snippet,contentDetails',
+      playlistId: pid, //Youtube saves uploads of a channel by playlist
+      maxResults: 50
+    };
+    var request = gapi.client.youtube.playlistItems.list(rq);
+
+    request.execute(function(response) {
+      for(var i =0; i < response.items.length; i++){ //to get the entire upload playlist
+        var itm = response.items[i];
+        // now inside the video resources. Api ref: https://developers.google.com/youtube/v3/docs/videos#snippet.publishedAt
+        var thumb = itm.snippet.thumbnails.medium;
+        // might wanna shift the strings to display_uploads()
+        var link = "<a href='https://www.youtube.com/watch?v=" + itm.snippet.resourceId.videoId + "' target='_blank'>";
+        var img = "<img src='" + thumb.url + "' width=" + thumb.width + " height=" + thumb.height + ">";
+        var end_link = "</a>";
+        var dateTime = itm.snippet.publishedAt
+
+        var uploadDetails = {
+          'link':link,
+          'img':img,
+          'end_link':end_link,
+          'dateTime':dateTime
         }
-    }
+        uploads.push(uploadDetails);
 
-    function setSigninStatus(isSignedIn) {
-        var user = GoogleAuth.currentUser.get();
-        var isAuthorized = user.hasGrantedScopes(SCOPE);
-        if (isAuthorized) {
-            $('#sign-in-or-out-button').html('Sign out');
-        } else {
-            $('#sign-in-or-out-button').html('Sign In');
-        }
-		get_subscriptions();
-    }
+      }
+    });
+  }
 
-    function updateSigninStatus(isSignedIn) {
-        setSigninStatus();
+  function display_uploads(){
+    uploads.sort(function(a, b) {
+      return (a.dateTime < b.dateTime) ? -1 : ((a.dateTime > b.dateTime) ? 1 : 0);
+    }).reverse();
+
+    for (var i = 0; i < uploads.length; i++) {
+      $('#results').append(uploads[i].link + uploads[i].img + uploads[i].end_link);
     }
+  }
+
+
+
+
+  // function get_uploads(pid) {
+  //   var rq = {
+  //     part: 'snippet,contentDetails',
+  //     playlistId: pid, //Youtube saves uploads of a channel by playlist
+  //     maxResults: 50
+  //   };
+  //
+  //   var request = gapi.client.youtube.playlistItems.list(rq);
+  //
+  //
+  //
+  //   request.execute(function(response) {
+  //     var itm = response.items[0];
+  //     // using itm
+  //     var thumb = itm.snippet.thumbnails.medium;
+  //     var link = "<a href='https://www.youtube.com/watch?v=" + itm.snippet.resourceId.videoId + "' target='_blank'>";
+  //     var img = "<img src='" + thumb.url + "' width=" + thumb.width + " height=" + thumb.height + ">";
+  //     var end_link = "</a>";
+  //
+  //     $('#results').append(link + img + end_link);
+  //   });
+  // }
+
+
+
+
 </script>
 
 <button id="sign-in-or-out-button">Sign In</button>
 <div id="results"></div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script async defer src="https://apis.google.com/js/api.js"
-    onload="this.onload=function(){};handleClientLoad()"
-    onreadystatechange="if (this.readyState === 'complete') this.onload()">
+<script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()">
 </script>
