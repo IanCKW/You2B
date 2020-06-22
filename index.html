@@ -78,30 +78,30 @@
     var uploads = []; // create an array for the uploads in a channel
 
     function get_subscriptions(token) {
-		function get_subscriptions_page(token) {
-			var rq = {
-				part: 'id,contentDetails,subscriberSnippet,snippet',
-				mine: true,
-				maxResults: 50
-			};
-			if (token) {                // If we got a token from previous call...
-				rq.pageToken = token;   // ...attach it to the new request
-			}
-			var request = gapi.client.youtube.subscriptions.list(rq);
+        function get_subscriptions_page(token) {
+            var rq = {
+                part: 'id,contentDetails,subscriberSnippet,snippet',
+                mine: true,
+                maxResults: 50
+            };
+            if (token) {                 // If we got a token from previous call...
+                rq.pageToken = token;   // ...attach it to the new request
+            }
+            var request = gapi.client.youtube.subscriptions.list(rq);
 
-			request.execute(function(response) { // API ref for navigating channel: https://developers.google.com/youtube/v3/docs/channels
-				for (var i = 0; i < response.items.length; i++) {
-					var itm = response.items[i];
-					var cid = itm.snippet.resourceId.channelId; // we optain the channel id
-					get_channel(cid);
-				}
+            request.execute(function(response) { // API ref for navigating channel: https://developers.google.com/youtube/v3/docs/channels
+                for (var i = 0; i < response.items.length; i++) {
+                    var itm = response.items[i];
+                    var cid = itm.snippet.resourceId.channelId; // we optain the channel id
+                    get_channel(cid);
+                }
 
-				var next = response.nextPageToken;  // get token for next page
-				if (next) { 						// if a next page token exists...
-					get_subscriptions_page(next);   // ...recurse with the new token on next page
-				}
-			});
-		}
+                var next = response.nextPageToken;  // get token for next page
+                if (next) {                         // if a next page token exists...
+                    get_subscriptions_page(next);   // ...recurse with the new token on next page
+                }
+            });
+        }
         display_uploads();
     }
 
@@ -109,7 +109,7 @@
         var request = gapi.client.youtube.channels.list({
             part: 'snippet,contentDetails,statistics',
             id: cid
-        }); // the request now has that specific channel's data
+        }); //the request now has that specific channel's data
         request.execute(function(response) {
             var channels = response.items;
             if (channels.length == 0) {
@@ -123,13 +123,13 @@
     function get_uploads(pid) {
         var rq = {
             part: 'snippet,contentDetails',
-            playlistId: pid, // Youtube saves uploads of a channel by playlist
+            playlistId: pid, //Youtube saves uploads of a channel by playlist
             maxResults: 50
         };
         var request = gapi.client.youtube.playlistItems.list(rq);
 
         request.execute(function(response) {
-            for(var i =0; i < response.items.length; i++){ //to get the entire upload playlist
+            for(var i =0; i < response.items.length; i++){ // to get the entire upload playlist
                 var itm = response.items[i];
                 // now inside the video resources. Api ref: https://developers.google.com/youtube/v3/docs/videos#snippet.publishedAt
                 var thumb = itm.snippet.thumbnails.medium;
@@ -164,7 +164,7 @@
     // function get_uploads(pid) {
     //     var rq = {
     //         part: 'snippet,contentDetails',
-    //         playlistId: pid, //Youtube saves uploads of a channel by playlist
+    //         playlistId: pid, // Youtube saves uploads of a channel by playlist
     //         maxResults: 50
     //     };
     //
