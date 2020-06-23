@@ -7,17 +7,6 @@
 </head>
 
 <body>
-
-
-  <button id="sign-in-or-out-button" style="margin-left: 25px">Sign In/Authorize</button>
-  <button id="revoke-access-button" style="display: none; margin-left: 25px">Revoke access</button>
-
-  <div id="results"></div>
-  <div id="auth-status" style="display: inline; padding-left: 25px"></div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script async defer src="https://apis.google.com/js/api.js"
-    onload="this.onload=function(){};handleClientLoad()" 
-    onreadystatechange="if (this.readyState === 'complete') this.onload()">
   <script>var GoogleAuth;
 var SCOPE = 'https://www.googleapis.com/auth/youtube.force-ssl';
 
@@ -209,6 +198,17 @@ function display_uploads(uploads) {
     $('#results').append(uploads[i].link + uploads[i].img + uploads[i].end_link);
   }
 }</script>
+
+  <button id="sign-in-or-out-button" style="margin-left: 25px">Sign In/Authorize</button>
+  <button id="revoke-access-button" style="display: none; margin-left: 25px">Revoke access</button>
+
+  <div id="results"></div>
+  <div id="auth-status" style="display: inline; padding-left: 25px"></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js"
+    onload="this.onload=function(){};handleClientLoad()" 
+    onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  
 </body>
 
 </html>
