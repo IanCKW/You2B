@@ -1,16 +1,13 @@
 # Orbital 2020
 ### Project: You2B
 ### Team: Guanchanamobae
-### Latest update: June 29th 2020
 
+# Quickstart
+To run You2B, follow the link https://www.customyfeed.com. Enter your google account in the consent screen. The message “This app isn’t verified” will pop up. Click on “Advanced” at the bottom left. After that, approve the permissions and you will be logged in.
 
 **Purpose**
 
 To allow greater control of users’ subscriber feed, we have implemented a feature that will allow you to remove videos from your feed - we are calling it the Custom Feed. This will suit those who use Youtube primarily via the subscriber feed rather than the home page and who would like a bit of control over it. An upcoming feature will be the ability to add videos from other parts of youtube(eg, the home screen) into your Custom feed.
-
-**Running Customyfeed**
-
-To run You2B, follow the link https://www.customyfeed.com. Enter your google account in the consent screen. The message “This app isn’t verified” will pop up. Click on “Advanced” at the bottom left. After that, approve the permissions and you will be logged in.
 
 **Adding to the project**
 
@@ -23,3 +20,15 @@ As we had issues with Flask updating to v1.1, while our code is based on v1.0, w
 **Upcoming features**
 
 As mentioned previously, an upcoming feature will be the ability to add videos to your custom feed from other parts of youtube, eg the homepage or channel page. This will give users more control over what they can see in their custom feed.
+
+
+**Authors**
+
+Ian Chan Kit Wai
+
+Guan Yang Ze
+
+**Version**
+
+V1.0.0
+Latest update: June 29th 2020
