@@ -3,7 +3,7 @@
 ### Team: Guanchanamobae
 
 # Quickstart
-To run You2B, follow the link https://www.customyfeed.com. Enter your google account in the consent screen. The message “This app isn’t verified” will pop up. Click on “Advanced” at the bottom left. After that, approve the permissions and you will be logged in.
+To run You2B, follow the link https://www.customyfeed.xyz. Enter your google account in the consent screen. The message “This app isn’t verified” will pop up. Click on “Advanced” at the bottom left. After that, approve the permissions and you will be logged in.
 
 **Purpose**
 
