@@ -123,7 +123,7 @@ async function get_subscriptions(token) {
   var rq = {
     part: 'id,contentDetails,subscriberSnippet,snippet',
     mine: true,
-    maxResults: 10
+    maxResults: 50
   };
   if (token) { // If we got a token from previous call
     rq.pageToken = token; // .. attach it to the new request
@@ -176,7 +176,7 @@ function get_uploads(pid) {
   var rq = {
     part: 'snippet,contentDetails',
     playlistId: pid, //Youtube saves uploads of a channel by playlist
-    maxResults: 10
+    maxResults: 50
   };
   var request = gapi.client.youtube.playlistItems.list(rq);
   return gapi.client.youtube.playlistItems.list(rq).then(response => {
