@@ -1,0 +1,81 @@
+
+body{
+  font-family: 'Roboto', sans-serif;
+}
+
+button{
+  font-family: 'Roboto', sans-serif;
+}
+
+#sign-in-or-out-button, #revoke-access-button{
+  margin-bottom:10px;
+  padding: 6px;
+  background-color: #555555;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: lighter;
+}
+
+#results{
+  display:flex;
+  justify-content:centre;
+  align-items: center;
+  flex-wrap:wrap;
+}
+
+.buttonAndTitle{
+  display: flex;
+}
+
+.buttonContainer{
+  flex: 1;
+}
+
+.removeButton{
+  float: right;
+
+  height: 21px;
+  width: 21px;
+  font-weight: lighter;
+  line-height: 60%;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 0;
+  font-size: 30px;
+  background-color: #555555;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.removeButton:hover{
+  background-color: red;
+}
+
+
+
+.videoDetails{
+  width : 210px;
+  height: 192px;
+  margin : 2.5px;
+}
+
+.title{
+  flex:5
+  height: 55px;
+  font-weight: bold;
+  font-size: 14px;
+  padding-top: 5px;
+}
+
+.channelName{
+  font-size: 12px;
+  font-weight: lighter;
+  padding-top: 5px;
+}
