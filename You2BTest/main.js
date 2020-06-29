@@ -16,9 +16,9 @@ function initClient() {
   // Get API key and client ID from API Console.
   // 'scope' field specifies space-delimited list of access scopes.
   gapi.client.init({
-    'apiKey': 'AIzaSyCkJIc-LUy79icZ_npOxcZH1vXhG5qRNf4',
+    'apiKey': 'AIzaSyBpRkYjses5N_bF5KKrVjodxefxXCiV_ew',
     'discoveryDocs': [discoveryUrl],
-    'clientId': '572203695522-ruu1rkp6b0l1rp9tt1sdm4disfbmnhtf.apps.googleusercontent.com',
+    'clientId': '127786091019-jc7mc59esh5crvtup068hqdhj2ga43aj.apps.googleusercontent.com',
     'scope': SCOPE
   }).then(function() {
     GoogleAuth = gapi.auth2.getAuthInstance();
@@ -57,7 +57,7 @@ function setSigninStatus(isSignedIn) {
     $('#revoke-access-button').css('display', 'inline-block');
     // $('#auth-status').html('You are currently signed in and have granted ' +
     //   'access to this app.');
-    get_subscriptions();
+    display_logic();
   } else {
     $('#sign-in-or-out-button').html('Sign In/Authorize');
     $('#revoke-access-button').css('display', 'none');
@@ -83,12 +83,43 @@ function updateSigninStatus(isSignedIn) {
 ////Additions made///
 /////////////////////
 
+var userId='';
+
+async function display_logic(){
+  var userIdRequest =  gapi.client.youtube.channels.list({part:'id', mine : true});
+  var userId0 = await userIdRequest.then(response => {
+    var body = JSON.parse(response.body);
+    userId = body.items[0].id;
+    return userId;
+  });
+  Promise.all(userId0)
+    .then(response => {
+      userId = userId0;
+      if(localStorage.getItem(userId) === null ){
+        // var uploads = get_subscriptions();
+        // Promise.all([uploads])
+        //   .then(([uploads]) =>{
+        //     display_uploads(uploads);
+        //   });
+        get_subscriptions();
+      }
+      else{
+        console.log(userId);
+        var uploads0 = localStorage.getItem(userId);
+        console.log(uploads0);
+        var uploads = JSON.parse(uploads0);
+        display_uploads(uploads);
+      }
+    });
+
+
+
+}
 
 
 
 
 async function get_subscriptions(token) {
-  console.log("get_subs 1");
   var rq = {
     part: 'id,contentDetails,subscriberSnippet,snippet',
     mine: true,
@@ -97,14 +128,12 @@ async function get_subscriptions(token) {
   if (token) { // If we got a token from previous call
     rq.pageToken = token; // .. attach it to the new request
   }
+
   var request = gapi.client.youtube.subscriptions.list(rq);
   // the response.execute is a promise function (like how .then works)
-  var uploads = []
+  //var uploads = []
   uploads = await request.then(response => { //API ref for navigating channel: https://developers.google.com/youtube/v3/docs/channels
-    ///
-    //clean up and remove the .result
-    ///
-    console.log("get_subs 2");
+    //console.log(response.result.id);
     var uploads2 = [];
     for (var i = 0; i < response.result.items.length; i++) {
       var cid = response.result.items[i].snippet.resourceId.channelId; //we obtain the channel id
@@ -118,14 +147,13 @@ async function get_subscriptions(token) {
     return uploads2;
   });
 
-  console.log("finalisation");
   var uploadsFINAL = [];
   Promise.all(uploads)
     .then(response => {
-      console.log("adding to uploads final");
       for (var i = 0; i < uploads.length; i++) {
         uploadsFINAL = uploadsFINAL.concat(response[i]);
       }
+      localStorage.setItem(userId,JSON.stringify(uploadsFINAL));
       display_uploads(uploadsFINAL);
     });
 }
@@ -145,16 +173,13 @@ function get_channel_uploads(cid) { // input it here
 
 
 function get_uploads(pid) {
-  console.log("get_uploads")
   var rq = {
     part: 'snippet,contentDetails',
     playlistId: pid, //Youtube saves uploads of a channel by playlist
     maxResults: 10
   };
-  console.log("statistics issue")
-  //var request = gapi.client.youtube.playlistItems.list(rq);
+  var request = gapi.client.youtube.playlistItems.list(rq);
   return gapi.client.youtube.playlistItems.list(rq).then(response => {
-    console.log("inside .then of get_uploads");
     var uploadsInAChannel2 = [];
     var requestUploads = response.result.items;
     for (var i = 0; i < requestUploads.length; i++) { //to get the entire upload playlist
@@ -162,9 +187,9 @@ function get_uploads(pid) {
       var itm = requestUploads[i];
       var snippet = itm.snippet;
       var thumb = snippet.thumbnails.medium;
-      var link = "<a href='https://www.youtube.com/watch?v=" + snippet.resourceId.videoId + "' target='_blank'>";
+      var id = snippet.resourceId.videoId ;
       var img = "<img src='" + thumb.url + "' width=" + 210 + " height=" + 118 + ">";
-      var end_link = "</a>";
+
       var dateTime = snippet.publishedAt;
 
       var title = snippet.title;
@@ -174,9 +199,8 @@ function get_uploads(pid) {
       // console.log(duration);
 
       var uploadDetails = {
-        'link': link,
+        'id': id,
         'img': img,
-        'end_link': end_link,
         'dateTime': dateTime,
 
         'title': title,
@@ -184,7 +208,6 @@ function get_uploads(pid) {
         //'views': views
       }
       //console.log(views);
-      //$('#results').append(link + img + end_link);
       uploadsInAChannel2.push(uploadDetails);
     }
     return uploadsInAChannel2;
@@ -198,9 +221,9 @@ function display_uploads(uploads) {
   }).reverse();
 
   for (var i = 0; i < uploads.length; i++) {
-
-    var video = uploads[i].link + uploads[i].img + uploads[i].end_link;
-    var button = "<div class='buttonContainer'> <button class='removeButton'>-</button> </div>";
+    var link = "<a href='https://www.youtube.com/watch?v=" + uploads[i].id + "' target='_blank'>"
+    var video = link + uploads[i].img + "</a>";
+    var button = "<div class='buttonContainer'> <button id="+uploads[i].id+" class='removeButton'>-</button> </div>";
     var title =  "<div class ='title'>" + uploads[i].title + "</div>";
     var buttonAndTitle = "<div class='buttonAndTitle'>" + title + button + "</div>";
     var channelName = "<div class ='channelName'>" + uploads[i].channelName + "</div>";
@@ -211,5 +234,14 @@ function display_uploads(uploads) {
   //$(document).on allows for appended buttons after the script has run
   $(document).on('click','button.removeButton',function(){
     $(this).parent().parent().parent().remove();
+    var removedId = $(this).attr('id');
+    remove_from_uploads(removedId);
   });
+}
+
+function remove_from_uploads(removedId){
+  var currentUploads = JSON.parse(localStorage.getItem(userId));
+  var afterRemUploads = currentUploads.filter(item => item.id !== removedId);
+  localStorage.setItem(userId,JSON.stringify(afterRemUploads));
+
 }
