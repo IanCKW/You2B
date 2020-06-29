@@ -16,13 +16,12 @@ function initClient() {
   // Get API key and client ID from API Console.
   // 'scope' field specifies space-delimited list of access scopes.
   gapi.client.init({
-    'apiKey': 'AIzaSyATwhlzeFYLx-j_d32lAfbX-RPSnqcxUAM',
+    'apiKey': 'AIzaSyCkJIc-LUy79icZ_npOxcZH1vXhG5qRNf4',
     'discoveryDocs': [discoveryUrl],
-    'clientId': '1081678782959-mc8f2peng2mvmqs6q8o5v0fr0s6f62l3.apps.googleusercontent.com',
+    'clientId': '572203695522-ruu1rkp6b0l1rp9tt1sdm4disfbmnhtf.apps.googleusercontent.com',
     'scope': SCOPE
   }).then(function() {
     GoogleAuth = gapi.auth2.getAuthInstance();
-    
 
     // Listen for sign-in state changes.
     GoogleAuth.isSignedIn.listen(updateSigninStatus);
@@ -56,24 +55,21 @@ function setSigninStatus(isSignedIn) {
   if (isAuthorized) {
     $('#sign-in-or-out-button').html('Sign out');
     $('#revoke-access-button').css('display', 'inline-block');
-    $('#auth-status').html('You are currently signed in and have granted ' +
-      'access to this app.');
+    // $('#auth-status').html('You are currently signed in and have granted ' +
+    //   'access to this app.');
+    get_subscriptions();
   } else {
     $('#sign-in-or-out-button').html('Sign In/Authorize');
     $('#revoke-access-button').css('display', 'none');
     $('#auth-status').html('You have not authorized this app or you are ' +
       'signed out.');
   }
-  console.log(get_subscriptions().then(response => {
-    response
-  }));
-  //display_uploads(get_subscriptions());
+
 
 }
 
 function updateSigninStatus(isSignedIn) {
   setSigninStatus();
-  console.log("inside updateSigninStatus");
 }
 
 
@@ -92,10 +88,11 @@ function updateSigninStatus(isSignedIn) {
 
 
 async function get_subscriptions(token) {
+  console.log("get_subs 1");
   var rq = {
     part: 'id,contentDetails,subscriberSnippet,snippet',
     mine: true,
-    maxResults: 50
+    maxResults: 10
   };
   if (token) { // If we got a token from previous call
     rq.pageToken = token; // .. attach it to the new request
@@ -107,6 +104,7 @@ async function get_subscriptions(token) {
     ///
     //clean up and remove the .result
     ///
+    console.log("get_subs 2");
     var uploads2 = [];
     for (var i = 0; i < response.result.items.length; i++) {
       var cid = response.result.items[i].snippet.resourceId.channelId; //we obtain the channel id
@@ -114,16 +112,17 @@ async function get_subscriptions(token) {
       uploads2 = uploads2.concat(uploadsInAChannel);
     }
     var next = response.nextPageToken; // get token for next page
-    console.log(uploads2);
     if (next) { // if has next
       get_subscriptions(next); // recurse with the new token
     }
     return uploads2;
   });
 
+  console.log("finalisation");
   var uploadsFINAL = [];
   Promise.all(uploads)
     .then(response => {
+      console.log("adding to uploads final");
       for (var i = 0; i < uploads.length; i++) {
         uploadsFINAL = uploadsFINAL.concat(response[i]);
       }
@@ -146,36 +145,48 @@ function get_channel_uploads(cid) { // input it here
 
 
 function get_uploads(pid) {
+  console.log("get_uploads")
   var rq = {
     part: 'snippet,contentDetails',
     playlistId: pid, //Youtube saves uploads of a channel by playlist
-    maxResults: 50
+    maxResults: 10
   };
+  console.log("statistics issue")
   //var request = gapi.client.youtube.playlistItems.list(rq);
   return gapi.client.youtube.playlistItems.list(rq).then(response => {
+    console.log("inside .then of get_uploads");
     var uploadsInAChannel2 = [];
     var requestUploads = response.result.items;
     for (var i = 0; i < requestUploads.length; i++) { //to get the entire upload playlist
+      // send a video request for views and duration
       var itm = requestUploads[i];
-      // now inside the video resources. Api ref: https://developers.google.com/youtube/v3/docs/videos#snippet.publishedAt
-      var thumb = itm.snippet.thumbnails.medium;
-      // might wanna shift the strings to display_uploads()
-      var link = "<a href='https://www.youtube.com/watch?v=" + itm.snippet.resourceId.videoId + "' target='_blank'>";
-      var img = "<img src='" + thumb.url + "' width=" + thumb.width + " height=" + thumb.height + ">";
+      var snippet = itm.snippet;
+      var thumb = snippet.thumbnails.medium;
+      var link = "<a href='https://www.youtube.com/watch?v=" + snippet.resourceId.videoId + "' target='_blank'>";
+      var img = "<img src='" + thumb.url + "' width=" + 210 + " height=" + 118 + ">";
       var end_link = "</a>";
-      var dateTime = itm.snippet.publishedAt
+      var dateTime = snippet.publishedAt;
+
+      var title = snippet.title;
+      var channelName = snippet.channelTitle;
+      //var views = itm.statistics.viewCount;
+      // var duration = itm.contentDetails.duration;
+      // console.log(duration);
 
       var uploadDetails = {
         'link': link,
         'img': img,
         'end_link': end_link,
-        'dateTime': dateTime
+        'dateTime': dateTime,
+
+        'title': title,
+        'channelName': channelName,
+        //'views': views
       }
+      //console.log(views);
       //$('#results').append(link + img + end_link);
       uploadsInAChannel2.push(uploadDetails);
-      //console.log("request execute inside request execute inside get_uploads" + uploads);
     }
-    console.log(uploadsInAChannel2);
     return uploadsInAChannel2;
   });
 }
@@ -187,6 +198,18 @@ function display_uploads(uploads) {
   }).reverse();
 
   for (var i = 0; i < uploads.length; i++) {
-    $('#results').append(uploads[i].link + uploads[i].img + uploads[i].end_link);
+
+    var video = uploads[i].link + uploads[i].img + uploads[i].end_link;
+    var button = "<div class='buttonContainer'> <button class='removeButton'>-</button> </div>";
+    var title =  "<div class ='title'>" + uploads[i].title + "</div>";
+    var buttonAndTitle = "<div class='buttonAndTitle'>" + title + button + "</div>";
+    var channelName = "<div class ='channelName'>" + uploads[i].channelName + "</div>";
+    //var views = "<div class ='views'>" + uploads[i].views + "</div>";
+    $('#results').append("<div class = 'videoDetails'>"  + video + buttonAndTitle + channelName + "</div>");
   }
+
+  //$(document).on allows for appended buttons after the script has run
+  $(document).on('click','button.removeButton',function(){
+    $(this).parent().parent().parent().remove();
+  });
 }

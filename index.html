@@ -1,17 +1,27 @@
-<<script src="main.js" charset="utf-8"></script>
 
-<button id="sign-in-or-out-button"
-        style="margin-left: 25px">Sign In/Authorize</button>
-<button id="revoke-access-button"
-        style="display: none; margin-left: 25px">Revoke access</button>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <title></title>
+  </head>
+  <body>
+    <script src="main.js" charset="utf-8"></script>
+    <button id="sign-in-or-out-button"
+          style="margin-left: 25px">Sign In/Authorize</button>
+    <button id="revoke-access-button"
+          style="display: none; margin-left: 25px">Revoke access</button>
 
-<div id="results"></div>
+    <div id="results"></div>
+    <br>
+    <!-- <div id="auth-status"></div><hr> -->
 
-
-<div id="auth-status" style="display: inline; padding-left: 25px"></div><hr>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script async defer src="https://apis.google.com/js/api.js"
-        onload="this.onload=function(){};handleClientLoad()"
-        onreadystatechange="if (this.readyState === 'complete') this.onload()">
-</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){};handleClientLoad()"
+          onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+  </body>
+</html>
