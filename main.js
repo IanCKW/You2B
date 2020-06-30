@@ -113,7 +113,7 @@ async function get_subscriptions(token) {
   var rq = {
     part: 'id,contentDetails,subscriberSnippet,snippet',
     mine: true,
-    maxResults: 100
+    maxResults: 10
   };
   token ? rq.pageToken = token : 0; //If we got a token from previous call .. attach it to the new request
   var uploadsByChannel = await gapi.client.youtube.subscriptions.list(rq)
