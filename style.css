@@ -1,9 +1,5 @@
 
-body{
-  font-family: 'Roboto', sans-serif;
-}
-
-button{
+body, button{
   font-family: 'Roboto', sans-serif;
 }
 
@@ -27,6 +23,12 @@ button{
   flex-wrap:wrap;
 }
 
+.videoDetails{
+  width : 210px;
+  height: 192px;
+  margin : 2.5px;
+}
+
 .buttonAndTitle{
   display: flex;
 }
@@ -37,7 +39,6 @@ button{
 
 .removeButton{
   float: right;
-
   height: 21px;
   width: 21px;
   font-weight: lighter;
@@ -56,14 +57,6 @@ button{
 
 .removeButton:hover{
   background-color: red;
-}
-
-
-
-.videoDetails{
-  width : 210px;
-  height: 192px;
-  margin : 2.5px;
 }
 
 .title{

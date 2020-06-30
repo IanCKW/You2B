@@ -1,3 +1,5 @@
+// Authorisation //
+
 var GoogleAuth;
 var SCOPE = 'https://www.googleapis.com/auth/youtube.force-ssl';
 
@@ -16,9 +18,9 @@ function initClient() {
   // Get API key and client ID from API Console.
   // 'scope' field specifies space-delimited list of access scopes.
   gapi.client.init({
-    'apiKey': 'AIzaSyBpRkYjses5N_bF5KKrVjodxefxXCiV_ew',
+    'apiKey': 'AIzaSyA0SYBgKPE-cTj8sGaZyGsmxiFrddtlzsQ',
     'discoveryDocs': [discoveryUrl],
-    'clientId': '127786091019-jc7mc59esh5crvtup068hqdhj2ga43aj.apps.googleusercontent.com',
+    'clientId': '115032625780-i77ut1na7ausuk3dod8m0ngupptdvmvc.apps.googleusercontent.com',
     'scope': SCOPE
   }).then(function() {
     GoogleAuth = gapi.auth2.getAuthInstance();
@@ -65,25 +67,23 @@ function setSigninStatus(isSignedIn) {
       'signed out.');
   }
 
-
 }
 
 function updateSigninStatus(isSignedIn) {
   setSigninStatus();
 }
 
-
-
-
-
-
-
-
 /////////////////////
 ////Additions made///
 /////////////////////
 
+
+// interacting with the API ///
+// global variables //
+
+
 var userId='';
+
 
 async function display_logic(){
   var userIdRequest =  gapi.client.youtube.channels.list({part:'id', mine : true});
@@ -94,154 +94,154 @@ async function display_logic(){
   });
   Promise.all(userId0)
     .then(response => {
-      userId = userId0;
-      if(localStorage.getItem(userId) === null ){
-        // var uploads = get_subscriptions();
-        // Promise.all([uploads])
-        //   .then(([uploads]) =>{
-        //     display_uploads(uploads);
-        //   });
-        get_subscriptions();
-      }
-      else{
-        console.log(userId);
-        var uploads0 = localStorage.getItem(userId);
-        console.log(uploads0);
-        var uploads = JSON.parse(uploads0);
-        display_uploads(uploads);
-      }
+      check_if_first_sign_in(userId0);
     });
-
-
-
 }
 
-
+function check_if_first_sign_in(userId){
+  if(localStorage.getItem(userId) === null ){
+    get_subscriptions();
+  }
+  else{
+    display_uploads(get_localStorage_uploads(userId));
+  }
+}
 
 
 async function get_subscriptions(token) {
+  console.log(token);
   var rq = {
     part: 'id,contentDetails,subscriberSnippet,snippet',
     mine: true,
-    maxResults: 50
+    maxResults: 100
   };
-  if (token) { // If we got a token from previous call
-    rq.pageToken = token; // .. attach it to the new request
-  }
-
-  var request = gapi.client.youtube.subscriptions.list(rq);
-  // the response.execute is a promise function (like how .then works)
-  //var uploads = []
-  uploads = await request.then(response => { //API ref for navigating channel: https://developers.google.com/youtube/v3/docs/channels
-    //console.log(response.result.id);
-    var uploads2 = [];
-    for (var i = 0; i < response.result.items.length; i++) {
-      var cid = response.result.items[i].snippet.resourceId.channelId; //we obtain the channel id
-      uploadsInAChannel = get_channel_uploads(cid);
-      uploads2 = uploads2.concat(uploadsInAChannel);
-    }
-    var next = response.nextPageToken; // get token for next page
-    if (next) { // if has next
-      get_subscriptions(next); // recurse with the new token
-    }
-    return uploads2;
-  });
-
-  var uploadsFINAL = [];
-  Promise.all(uploads)
+  token ? rq.pageToken = token : 0; //If we got a token from previous call .. attach it to the new request
+  var uploadsByChannel = await gapi.client.youtube.subscriptions.list(rq)
     .then(response => {
-      for (var i = 0; i < uploads.length; i++) {
-        uploadsFINAL = uploadsFINAL.concat(response[i]);
-      }
-      localStorage.setItem(userId,JSON.stringify(uploadsFINAL));
-      display_uploads(uploadsFINAL);
+      var next = response.nextPageToken; // get token for next page
+      next ? get_subscriptions(next) : 0;// if has next, recurse with the new token
+      return iter_subscribed_channels(response);
+  });
+  Promise.all(uploadsByChannel)
+    .then(uploadsByChannel => {
+      display_uploads(set_localStorage_nested_uploads(uploadsByChannel,userId));
     });
 }
 
-function get_channel_uploads(cid) { // input it here
+var p = 0;
+
+function iter_subscribed_channels(response){
+  p = p + 1;
+  console.log(p);
+  var uploads = [];
+  var uploadsByChannel = [];
+  for (var i = 0; i < response.result.items.length; i++) {
+    var cid = response.result.items[i].snippet.resourceId.channelId;
+    uploadsByChannel = get_channel_uploads(cid);
+    uploads = uploads.concat(uploadsByChannel);
+  }
+  return uploads;
+}
+
+
+function get_channel_uploads(cid) {
   var request = gapi.client.youtube.channels.list({
     part: 'snippet,contentDetails,statistics',
     id: cid
-  }); //the request now has that specific channel's data
+  });
   return request.then(response => {
     var channels = response.result.items;
     if (channels.length == 0) {} else {
-      return get_uploads(channels[0].contentDetails.relatedPlaylists.uploads);
+      return get_upload_data(channels[0].contentDetails.relatedPlaylists.uploads);
     }
   });
 }
 
 
-function get_uploads(pid) {
+function get_upload_data(pid) {
   var rq = {
     part: 'snippet,contentDetails',
     playlistId: pid, //Youtube saves uploads of a channel by playlist
-    maxResults: 50
+    maxResults: 10
   };
   var request = gapi.client.youtube.playlistItems.list(rq);
   return gapi.client.youtube.playlistItems.list(rq).then(response => {
-    var uploadsInAChannel2 = [];
-    var requestUploads = response.result.items;
-    for (var i = 0; i < requestUploads.length; i++) { //to get the entire upload playlist
-      // send a video request for views and duration
-      var itm = requestUploads[i];
-      var snippet = itm.snippet;
-      var thumb = snippet.thumbnails.medium;
+    var uploadsByChannel = [];
+    var uploadsReq = response.result.items;
+    for (var i = 0; i < uploadsReq.length; i++) {
+      var snippet = uploadsReq[i].snippet;
       var id = snippet.resourceId.videoId ;
-      var img = "<img src='" + thumb.url + "' width=" + 210 + " height=" + 118 + ">";
-
+      var img = snippet.thumbnails.medium.url
       var dateTime = snippet.publishedAt;
-
       var title = snippet.title;
       var channelName = snippet.channelTitle;
-      //var views = itm.statistics.viewCount;
-      // var duration = itm.contentDetails.duration;
-      // console.log(duration);
 
       var uploadDetails = {
         'id': id,
         'img': img,
         'dateTime': dateTime,
-
         'title': title,
         'channelName': channelName,
-        //'views': views
       }
-      //console.log(views);
-      uploadsInAChannel2.push(uploadDetails);
+      uploadsByChannel.push(uploadDetails);
     }
-    return uploadsInAChannel2;
+    return uploadsByChannel;
   });
 }
 
+// display // ???
 
 function display_uploads(uploads) {
   uploads.sort(function(a, b) {
     return (a.dateTime < b.dateTime) ? -1 : ((a.dateTime > b.dateTime) ? 1 : 0);
   }).reverse();
-
   for (var i = 0; i < uploads.length; i++) {
     var link = "<a href='https://www.youtube.com/watch?v=" + uploads[i].id + "' target='_blank'>"
-    var video = link + uploads[i].img + "</a>";
-    var button = "<div class='buttonContainer'> <button id="+uploads[i].id+" class='removeButton'>-</button> </div>";
+    var thumbnail = "<img src='" + uploads[i].img + "' width=" + 210 + " height=" + 118 + ">";
+    var video = link + thumbnail + "</a>";
+    var remButton = "<div class='buttonContainer'> <button id="+uploads[i].id+" class='removeButton'>-</button> </div>";
     var title =  "<div class ='title'>" + uploads[i].title + "</div>";
-    var buttonAndTitle = "<div class='buttonAndTitle'>" + title + button + "</div>";
+    var buttonAndTitle = "<div class='buttonAndTitle'>" + title + remButton + "</div>";
     var channelName = "<div class ='channelName'>" + uploads[i].channelName + "</div>";
-    //var views = "<div class ='views'>" + uploads[i].views + "</div>";
     $('#results').append("<div class = 'videoDetails'>"  + video + buttonAndTitle + channelName + "</div>");
   }
+  add_button_event_listeners();
+}
 
-  //$(document).on allows for appended buttons after the script has run
+// event listeners //
+
+
+function add_button_event_listeners(){
   $(document).on('click','button.removeButton',function(){
     $(this).parent().parent().parent().remove();
     var removedId = $(this).attr('id');
-    remove_from_uploads(removedId);
+    remove_from_localStorage(removedId);
   });
 }
 
-function remove_from_uploads(removedId){
+
+// setters and getters to local storage // create a new JS file for this
+
+function remove_from_localStorage(removedId){
   var currentUploads = JSON.parse(localStorage.getItem(userId));
   var afterRemUploads = currentUploads.filter(item => item.id !== removedId);
   localStorage.setItem(userId,JSON.stringify(afterRemUploads));
+}
 
+function set_localStorage_nested_uploads(nestedUploads,userId){
+  //Despite concating in iter_subscribed_channels, uploadsbychannel is still nested
+  var uploads = [];
+  for (var i = 0; i < nestedUploads.length; i++) {
+    uploads = uploads.concat(nestedUploads[i]);
+  }
+  set_localStorage_uploads(uploads);
+  return get_localStorage_uploads(userId)
+}
+
+function set_localStorage_uploads(uploads){
+  localStorage.setItem(userId,JSON.stringify(uploads));
+}
+
+function get_localStorage_uploads(userId){
+  return JSON.parse(localStorage.getItem(userId));
 }
