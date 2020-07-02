@@ -1,0 +1,4 @@
+include you2b/schema.sql
+graft you2b/static
+graft you2b/templates
+global-exclude *.pyc
