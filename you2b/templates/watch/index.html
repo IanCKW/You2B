@@ -5,24 +5,45 @@
 {% endblock %}
 
 {% block content %}
+<div>
+    <span class="tooltip"> <button id="commit" > Commit </button>
+        <span class="tooltiptext"> Commit to remove videos </span>
+    </span>
+    <span class="tooltip"> <button id="undo" > Undo </button>
+        <span class="tooltiptext"> Undo until last commit </span>
+    </span>
+</div>
     {% if new_videos|length > 0 %}
         <h1>Since you last watched</h1>
-        <center>
+        <div class="results">
             {% for new_video in new_videos %}
-                <a href="{{ new_video[1] }}" target='_blank'>
-                <img src="{{ new_video[2] }}" width="160" height="90">
-                </a>
+                <div class = "videoDetails">
+                    <a href="{{ new_video[2] }}" target='_blank'>
+                    <img class="thumb" src="{{ new_video[3] }}" width="160" height="90">
+                    </a>
+                    <div class='buttonContainer'>
+                        <button class="removeButton" id="{{ new_video[1] }}">-</button>
+                    </div>
+                </div>
             {% endfor %}
-        </center>
+        </div>
         <h1>Older</h1>
     {% else %}
         <h1>Your feed</h1>
     {% endif %}
-    <center>
+    <div><button id="testButton" > button test </button></div>
+
+    <div class="results">
         {% for old_video in old_videos %}
-            <a href="{{ old_video[1] }}" target='_blank'>
-            <img src="{{ old_video[2] }}" width="160" height="90">
-            </a>
+            <div class = "videoDetails">
+                <a href="{{ old_video[2] }}" target='_blank'>
+                <img class="thumb" src="{{ old_video[3] }}" width="160" height="90">
+                </a>
+                <div class='buttonContainer'>
+                    <button class="removeButton" id="{{ old_video[1] }}">-</button>
+                </div>
+            </div>
         {% endfor %}
-    </center>
+    </div>
 {% endblock %}
+

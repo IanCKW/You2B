@@ -26,8 +26,8 @@ from flask_login import (
 from .user import User
 
 # Configuration       ################################################
-CLIENT_SECRETS_FILE = ### PLACE YOUR CLIENT SECRETS FILE PATH HERE ###
-                      ################################################
+CLIENT_SECRETS_FILE = '/Users/ianchankitwai/Desktop/Webdev2020/You2BFlask/You2B/you2b/client_secret_file.json'
+
 SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
