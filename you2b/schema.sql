@@ -9,6 +9,7 @@ CREATE TABLE user (
 
 CREATE TABLE video (
     user_id TEXT,
+    video_id TEXT,
     video_url TEXT,
     video_img TEXT,
     date_time TEXT,

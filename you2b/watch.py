@@ -8,7 +8,7 @@ import googleapiclient.discovery
 
 # Third-party libraries
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, jsonify, make_response
 )
 from flask_login import (
     LoginManager,
@@ -49,16 +49,16 @@ def index():
         # Collect old videos from the database
         db = get_db()       
         old_videos = db.execute(
-            "SELECT date_time, video_url, video_img FROM video "
-            "WHERE user_id = ? "
+            "SELECT date_time, video_id, video_url, video_img FROM video "
+            "WHERE user_id = ? " 
             "ORDER BY date_time DESC", (current_user.id,)
         ).fetchall()
         for video in new_videos:
             db.execute(
-                "INSERT INTO video (user_id, video_url, video_img, date_time, deleted) "
-                "VALUES (?, ?, ?, ?, 0)",
-                (current_user.id, video[1], video[2], video[0])
-            ) 
+                "INSERT INTO video (user_id, video_id, video_url, video_img, date_time, deleted) "
+                "VALUES (?, ?, ?, ?, ?, 0)",
+                (current_user.id, video[1], video[2], video[3], video[0])
+            )
         db.commit()
         return render_template('watch/index.html', new_videos=new_videos, old_videos=old_videos)
     else:
@@ -128,10 +128,28 @@ def collect_videos(youtube):
             if dateTime > current_user.last_visited:
                 thumb = video['snippet']['thumbnails']['medium']
                 img = thumb['url']
+                id = video['snippet']['resourceId']['videoId']
                 link = "https://www.youtube.com/watch?v=" + video['snippet']['resourceId']['videoId']
 
-                videos.append((dateTime, link, img))
+                videos.append((dateTime, id, link, img))
     
     # Sort and return list of videos.
     videos = sorted(videos, reverse=True)    
     return videos
+
+
+@bp.route("/del-vid",methods=["POST"])
+def create_entry():
+    req = request.get_json()
+    video_id_arr = req["message"]
+    print(video_id_arr)
+    db = get_db()
+
+    for video_id in video_id_arr:
+        db.execute(
+            "DELETE FROM video WHERE video_id = ?", (video_id,)
+        )
+    db.commit()
+
+    # res = make_response(jsonify({"message":"JSON received"}),200)
+    return video_id

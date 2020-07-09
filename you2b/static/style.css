@@ -1,3 +1,90 @@
+#commit, #undo{
+    width:200px;
+    display: none;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width:200px;
+  text-align: center;
+  background-color:black;
+  color:#fff;
+  text-align:center;
+  padding:5px;
+  border-radius:3px;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+
+  bottom: 100%;
+  left: 50%;
+  margin-left: -100px;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+
+
+
+.results{
+  display:flex;
+  justify-content:centre;
+  align-items: center;
+  flex-wrap:wrap;
+}
+
+.videoDetails{
+  width : 210px;
+  height: 192px;
+  margin : 2.5px;
+}
+
+.removeButton{
+  float: right;
+  height: 21px;
+  width: 21px;
+  font-weight: lighter;
+  line-height: 60%;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 0;
+  font-size: 30px;
+  background-color: #555555;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.removeButton:hover{
+  background-color: red;
+}
+
+.thumb{
+    width:210px;
+    height: 118px;
+}
+
+
+
+
+
+
+
+
+
+
 html {
     font-family: sans-serif;
     background: #eee;
