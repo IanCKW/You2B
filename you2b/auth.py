@@ -25,9 +25,8 @@ from flask_login import (
 # Internal imports
 from .user import User
 
-# Configuration       ################################################
-CLIENT_SECRETS_FILE = '/Users/ianchankitwai/Desktop/Webdev2020/You2BFlask/You2B/you2b/client_secret_file.json'
-
+# Configuration
+CLIENT_SECRETS_FILE = '' # file name here
 SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
@@ -92,8 +91,7 @@ def oauth2callback():
         
         # If the user doesn't exist, add it to the database
         if not User.get(unique_id):
-            # TODO: hardcode the zero-time into User.create (it's here for now for debug purposes)
-            User.create(unique_id, profile_pic, "0000-00-00T00:00:00Z")
+            User.create(unique_id, profile_pic)
         
         # Either way, collect the user from the database
         user = User.get(unique_id)

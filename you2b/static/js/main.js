@@ -1,32 +1,23 @@
-var pendingToRem = [];
+var removeStack = [];
 
-function need_buttons(){
-    if(pendingToRem.length === 0){
-        console.log(document.getElementById("commit"));
-        document.getElementById("commit").style.display='none';
+function need_button(){
+    if (removeStack.length === 0) {
         document.getElementById("undo").style.display='none';
-    }
-    else{
-        document.getElementById("commit").style.display='unset';
+    } else {
         document.getElementById("undo").style.display='unset';
     }
 }
 
 $(document).on('click','button.removeButton',function(){
     $(this).parent().parent()[0].style.display="none";
-    var videoId = $(this).attr("id");
-    pendingToRem.push(videoId);
-    need_buttons();
-});
-
-$(document).on('click','button#commit',function(){
-    var entry = {
-        message : pendingToRem,
+    var videoId = $(this).parent().parent().attr("id");
+    removeStack.push(videoId);
+    need_button();
+	
+	var entry = {
+        message : videoId,
     };
-
-    pendingToRem=[];
-    need_buttons();
-
+	
     fetch(`${window.origin}/del-vid`,{
         method:"POST",
         credentials: "include",
@@ -37,14 +28,27 @@ $(document).on('click','button#commit',function(){
         })
     })
 });
+
 $(document).on('click','button#undo',function(){
-    if(pendingToRem.length>0){
-        var allVideos = Array.from($(".videoDetails"));
-        console.log(allVideos[0]);
-        allVideos.forEach(video=>{video.style.display="unset"});
+    if (removeStack.length > 0) {
+		var videoId = removeStack.pop()
+        document.getElementById(videoId).style.display='unset';
+		
+		var entry = {
+			message : videoId,
+		};
+		
+		fetch(`${window.origin}/undel-vid`,{
+			method:"POST",
+			credentials: "include",
+			body: JSON.stringify(entry),
+			cache: "no-cache",
+			headers: new Headers({
+				"content-type":"application/json"
+			})
+		})
     }
-    pendingToRem=[];
-    need_buttons();
+    need_button();
 });
 
 

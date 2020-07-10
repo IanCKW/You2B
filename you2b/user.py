@@ -22,12 +22,12 @@ class User(UserMixin):
         return user
 
     @staticmethod
-    def create(id_, profile_pic, last_visited):
+    def create(id_, profile_pic):
         db = get_db()
         db.execute(
             "INSERT INTO user (id, profile_pic, last_visited) "
             "VALUES (?, ?, ?)",
-            (id_, profile_pic, last_visited),
+            (id_, profile_pic, "0000-00-00T00:00:00Z"),
         )
         db.commit()
     

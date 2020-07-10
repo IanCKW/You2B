@@ -50,7 +50,7 @@ def index():
         db = get_db()       
         old_videos = db.execute(
             "SELECT date_time, video_id, video_url, video_img FROM video "
-            "WHERE user_id = ? " 
+            "WHERE user_id = ? AND deleted = 0 " 
             "ORDER BY date_time DESC", (current_user.id,)
         ).fetchall()
         for video in new_videos:
@@ -114,11 +114,11 @@ def collect_videos(youtube):
         chan_uploads_response = chan_uploads_request.execute()
         chan_upload_id = chan_uploads_response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
         
-        # Take latest 50 videos from each channel
+        # Take latest 30 videos from each channel
         get_uploaded_vids_request = youtube.playlistItems().list(
             part = "snippet",
             playlistId = chan_upload_id,
-            maxResults = 50
+            maxResults = 30
         )
         get_uploaded_vids_response = get_uploaded_vids_request.execute()
         for video in get_uploaded_vids_response['items']:
@@ -138,17 +138,31 @@ def collect_videos(youtube):
     return videos
 
 
-@bp.route("/del-vid",methods=["POST"])
-def create_entry():
+@bp.route("/del-vid", methods=["POST"])
+def delete_vid():
     req = request.get_json()
-    video_id_arr = req["message"]
-    print(video_id_arr)
+    video_id = req["message"]
     db = get_db()
+    db.execute(
+        "UPDATE video "
+        "SET deleted = 1 "
+        "WHERE user_id = ? AND video_id = ?", (current_user.id, video_id)
+    )
+    db.commit()
 
-    for video_id in video_id_arr:
-        db.execute(
-            "DELETE FROM video WHERE video_id = ?", (video_id,)
-        )
+    # res = make_response(jsonify({"message":"JSON received"}),200)
+    return video_id
+
+@bp.route("/undel-vid", methods=["POST"])
+def undelete_vid():
+    req = request.get_json()
+    video_id = req["message"]
+    db = get_db()
+    db.execute(
+        "UPDATE video "
+        "SET deleted = 0 "
+        "WHERE user_id = ? AND video_id = ?", (current_user.id, video_id)
+    )
     db.commit()
 
     # res = make_response(jsonify({"message":"JSON received"}),200)
