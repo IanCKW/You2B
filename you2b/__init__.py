@@ -13,6 +13,7 @@ from flask_login import (
     logout_user,
 )
 import requests
+from flask_cors import CORS, cross_origin
 
 # Internal imports
 from .db import init_db_command
@@ -21,6 +22,23 @@ from .user import User
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
+
+    @app.route("/add", methods=["POST"])
+    def added_videos():
+        req = request.get_json()
+        print(req["message"])
+        print("I made it mommy")
+        return req
+
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'you2b.sqlite'),
@@ -61,5 +79,8 @@ def create_app(test_config=None):
     from . import watch
     app.register_blueprint(watch.bp)
     app.add_url_rule('/', endpoint='index')
+
+    # CORS(app, support_credentials=True)
+    # app.config['CORS_HEADERS'] = 'Content-Type'
     
     return app

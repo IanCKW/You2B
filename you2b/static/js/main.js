@@ -18,6 +18,7 @@ $(document).ready(function() {
       response.json()
         .then(function(data) {
         // setting the state
+          document.getElementById("loader-container").remove();
           state.monthlyData = data["monthly_data"];
           state.userDatetime = data["user_datetime"];
           data["new_user"] ? state.userDatetime = data["month_by_index"][0]: state.userDatetime = data["user_datetime"] ;
@@ -52,11 +53,12 @@ function paginate() {
 }
 
 function create_buttons() {
+    //getting all the necessary variables
     var buttons = $('.pageButtons');
     var numButtons = state.numButtons;
     var currentMonthIndex = state.currentMonthIndex;
     var numMonths = state.numMonths;
-
+    //logic of which buttons to display
     var maxLeft = (currentMonthIndex - Math.floor(numButtons / 2));
     var maxRight = (currentMonthIndex +1+  Math.floor(numButtons / 2));
 
@@ -71,15 +73,34 @@ function create_buttons() {
         }
         maxRight = numMonths;
     }
+    //displaying the buttons
     for (var i=maxLeft; i<maxRight; i++ ){
+        //"First" button
+        if(i !== 0 && i === maxLeft){
+            var yearMonth = state.monthByIndex[0];
+            var bD ='<button class="page" id='+yearMonth+'>'+ 'First' +'</button>';
+            buttons.append(bD);
+        }
         var yearMonth = state.monthByIndex[i];
-        var buttonDetails ='<button class="pageButton" id='+yearMonth+'>'+ yearMonth +'</button>';
+        if (i === currentMonthIndex){
+            var buttonDetails ='<button class=" currentPage" id='+yearMonth+'>'+ yearMonth +'</button>';
+        }
+        else{
+            var buttonDetails ='<button class="page" id='+yearMonth+'>'+ yearMonth +'</button>';
+        }
         buttons.append(buttonDetails);
+    }
+    //one year from now button
+    if(state.monthByIndex[currentMonthIndex + 12]){
+        var yearMonth = state.monthByIndex[currentMonthIndex + 12];
+        var buttonDetails ='<button class="page" id='+yearMonth+'>'+ yearMonth +'</button>';
+        buttons.append("<span>...</span>" + buttonDetails);
     }
 
 }
 
-$(document).on('click', 'button.pageButton', function(){
+$(document).on('click', 'button.page', function(){
+    console.log(window.origin);
     $(".results").empty();
     $(".pageButtons").empty();
     var prev = state.currentYearMonth //for video removal
@@ -108,6 +129,7 @@ $(document).on('click', 'button.pageButton', function(){
 
 function display_month() {
   monthData = state.monthlyData[state.currentYearMonth];
+  $('.monthHeader').html(monthInLetters(state.currentYearMonth));
   for (var i = 0; i < monthData.length; i++) {
     var video =
       '<div id=' + monthData[i]["id"] + ' class="videoDetails"> ' +
@@ -121,6 +143,19 @@ function display_month() {
     $('.results').append(video);
   }
 }
+
+var monthDict = {
+    "01": "JANUARY", "02": "FEBRUARY", "03": "MARCH","04":"APRIL","05":"MAY","06":"JUNE","07":"JULY",
+    "08":"AUGUST","09":"SEPTEMBER","10":"OCTOBER","11":"NOVEMBER","12":"DECEMBER",
+}
+
+function monthInLetters(yearMonth){
+    var year = yearMonth.slice(0,4);
+    var month = yearMonth.slice(5,7);
+    var monthRes = monthDict[month];
+    return monthRes +" "+ year;
+}
+
 
 function need_button() {
   if (removeStack.length === 0) {
@@ -151,7 +186,7 @@ $(document).on('click', 'button.removeButton', function() {
   })
 });
 
-$(document).on('click', 'button#undo', function() {
+$(document).on('click', 'input#undo', function() {
   if (removeStack.length > 0) {
     var videoId = removeStack.pop()
     document.getElementById(videoId).style.display = 'unset';

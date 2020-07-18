@@ -2,27 +2,36 @@
 <title>{% block title %}{% endblock %} - You2B</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
-    <h1>You2B</h1>
-    <ul>
+    <div>You2B</div>
         {% if g.user %}
-            <li>You last visited at {{ g.user['last_visited'] }}.
-            <li><img src="{{ g.user['profile_pic'] }}" height="32" width="32">
-            <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+            <span>
+                <img src="{{ g.user['profile_pic'] }}" height="32" width="32">
+                <a href="{{ url_for('auth.logout') }}"><input type="button" value="Sign Out"></a>
+            </span>
         {% else %}
             <li><a class="button" href="/login">Google Login</a>
         {% endif %}
-    </ul>
 </nav>
-<section class="content">
-    <header>
-        {% block header %}{% endblock %}
-    </header>
-        {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-        {% endfor %}
-        {% block content %}{% endblock %}
-</section>
+<body>
+    <section class="content">
+        <header>
+            {% block header %}{% endblock %}
+        </header>
+            {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+            {% block content %}{% endblock %}
+    </section>
 
+    <div id="footer">
+        <span></span>
+        <span> <a href="">About</a> </span>
+        <span> <p>|</p> </span>
+        <span> <a href="">Guide</a> </span>
+        <span> <p>|</p> </span>
+        <span> <a href="">Github</a> </span>
+        <span></span>
+</body>
 {% block script %}{% endblock %}
 
 

@@ -13,9 +13,14 @@ from flask_login import (
     current_user,
 )
 
+
 # Internal imports
 from you2b.db import get_db
 from .user import User
+
+
+from flask import Flask
+from flask_cors import CORS
 
 # API client configuration
 API_SERVICE_NAME = 'youtube'
@@ -29,10 +34,11 @@ def index():
     if current_user.is_authenticated:
         return render_template('watch/index.html')
     else:
-        return (
-            '<p>You are not logged in to a YouTube account with a channel.</p>'
-            '<p>Please <a class="button" href="/login">log in</a>.</p>'
-        )
+        return render_template('login/page.html')
+        #         (
+        #     '<p>You are not logged in to a YouTube account with a channel.</p>'
+        #     '<p>Please <a class="button" href="/login">log in</a>.</p>'
+        # )
 
 # Returns the user's videos to place on the page
 def collect_videos(youtube):
@@ -83,7 +89,6 @@ def collect_videos(youtube):
     # Sort and return list of videos.
     end = time.perf_counter()
     videos = sorted(videos, reverse=True)
-    print(len(videos))
     return videos
 
 #wrapper required to pass in multiple parameters into the map function. Can't use lambda
@@ -118,7 +123,28 @@ def get_uploads(youtube,last_visited, cid):
             id = video['snippet']['resourceId']['videoId']
             link = "https://www.youtube.com/watch?v=" + video['snippet']['resourceId']['videoId']
             videos_of_this_channel.append([dateTime, id, link, img])
+
+
     return videos_of_this_channel
+
+#for the added videos in the playlist of choice
+def get_added(youtube,last_visited,pid):
+    added_videos = []
+    test_playlist_request = youtube.playlistItems().list(
+        part="snippet",
+        playlistId="PLTuqYR0_eatnezIOhxhDJbATe4hj1Owp_", ##add proper pid
+        maxResults=50
+    )
+    get_uploaded_vids_response = test_playlist_request.execute()
+    for video in get_uploaded_vids_response['items']:
+        dateTime = video['snippet']['publishedAt'] #change datetime
+        thumb = video['snippet']['thumbnails']['medium']
+        img = thumb['url']
+        id = video['snippet']['resourceId']['videoId']
+        link = "https://www.youtube.com/watch?v=" + video['snippet']['resourceId']['videoId']
+        added_videos.append([dateTime, id, link, img])
+    return added_videos
+
 
 #creating dictionaries for each vid and storing them in lists by month, with the month as the key of the parent dictionary
 def videos_by_month(all_videos):
@@ -231,7 +257,7 @@ def send_data():
     all_videos = videos_by_month(new_videos + old_videos)
     month_by_index = year_month_index(all_videos)
     index_by_month = index_year_month(all_videos)
-    print(all_videos)
+
     res = {
         "new_user":new_user,
         "monthly_data": all_videos,
@@ -241,30 +267,6 @@ def send_data():
     }
     res = make_response(jsonify(res),200)
     return res
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

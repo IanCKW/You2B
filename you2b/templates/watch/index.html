@@ -1,19 +1,14 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Watch{% endblock %}</h1>
+    <h1 id="watch">{% block title %}Watch{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<div>
-    <span class="tooltip"> <button id="commit" > Commit </button>
-        <span class="tooltiptext"> Commit to remove videos </span>
-    </span>
-    <span class="tooltip"> <button id="undo" > Undo </button>
-        <span class="tooltiptext"> Undo until last commit </span>
-    </span>
-</div>
+<div id="loader-container"><div id="loader"></div></div>
 <div class = "pageButtons"></div>
+<div class='monthHeader'></div>
+<input type="button" value="Undo" id="undo" >
 <div class="results"></div>
 {% endblock %}
 
