@@ -9,6 +9,7 @@ class User(UserMixin):
         self.id = id_
         self.profile_pic = profile_pic
         self.last_visited = last_visited
+        self.added_playlist = added_playlist
 
     @staticmethod
     def get(user_id):
@@ -18,16 +19,16 @@ class User(UserMixin):
         ).fetchone()
         if not user:
             return None
-        user = User(id_=user[0], profile_pic=user[1], last_visited=user[2])
+        user = User(id_=user[0], profile_pic=user[1], last_visited=user[2], added_playlist=user[3])
         return user
 
     @staticmethod
     def create(id_, profile_pic):
         db = get_db()
         db.execute(
-            "INSERT INTO user (id, profile_pic, last_visited) "
-            "VALUES (?, ?, ?)",
-            (id_, profile_pic, "0000-00-00T00:00:00Z"),
+            "INSERT INTO user (id, profile_pic, last_visited, added_playlist) "
+            "VALUES (?, ?, ?, ?)",
+            (id_, profile_pic, "0000-00-00T00:00:00Z", ""),
         )
         db.commit()
     
