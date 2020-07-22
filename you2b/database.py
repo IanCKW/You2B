@@ -3,7 +3,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 
-DATABASE_URI = 'postgres+psycopg2://postgres:pTitanium98s@localhost:5432/testing2'
+DATABASE_URI =  #'postgres+psycopg2://<postgres username>:<password>@<host of server>:<port>/<database name>'
 engine = create_engine(DATABASE_URI, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 Base = declarative_base()
