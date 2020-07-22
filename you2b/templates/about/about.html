@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>About</title>
+</head>
+<body>
+
+<nav>
+    <div><a id="go-back" href="{{ url_for('.index') }}">Go Back</a></div>
+
+</nav>
+
+<div id="guide-text">
+    <h2>About Us</h2>
+    <h2>FAQ</h2>
+</div>
+
+
+<div id="footer">
+        <span></span>
+        <span> <a href="">About</a> </span>
+        <span> <p>|</p> </span>
+        <span> <a href="{{ url_for('.guide') }}">Guide</a> </span>
+        <span> <p>|</p> </span>
+        <span> <a href="https://github.com/IanCKW/You2B"target="_blank" >Github</a> </span>
+        <span></span>
+    </div>
+
+</body>
+</html>

@@ -1,16 +1,17 @@
 <!doctype html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
 <title>{% block title %}{% endblock %} - You2B</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
     <div>You2B</div>
-        {% if g.user %}
-            <span>
-                <img src="{{ g.user['profile_pic'] }}" height="32" width="32">
-                <a href="{{ url_for('auth.logout') }}"><input type="button" value="Sign Out"></a>
-            </span>
-        {% else %}
-            <li><a class="button" href="/login">Google Login</a>
-        {% endif %}
+    <span>
+        <img id ="profile-pic" src="{{ current_user['profile_pic'] }}" height="32" width="32">
+
+    </span>
+
 </nav>
 <body>
     <section class="content">
@@ -25,15 +26,37 @@
 
     <div id="footer">
         <span></span>
-        <span> <a href="">About</a> </span>
+        <span> <a href="{{ url_for('.about') }}">About</a> </span>
         <span> <p>|</p> </span>
-        <span> <a href="">Guide</a> </span>
+        <span> <a href="{{ url_for('.guide') }}">Guide</a> </span>
         <span> <p>|</p> </span>
-        <span> <a href="">Github</a> </span>
+        <span> <a href="https://github.com/IanCKW/You2B"target="_blank" >Github</a> </span>
         <span></span>
+    </div>
 </body>
-{% block script %}{% endblock %}
 
+
+<div class="bg-modal">
+	<div class="modal-contents">
+
+		<div class="close">+</div>
+		<form action="#" id="connect-form" method="post">
+            <span> Connect playlist</span>
+            <div>
+			    <input id="pastePID"type="text" name="PID"placeholder="Paste your playlist id">
+			    <input id="submitPID" type="submit" value="Submit">
+                <a href="{{ url_for('.guide') }}" id="i"><i class="fa fa-question-circle" style="font-size:24px"></i></a>
+            </div>
+            <div id="submitted">
+                Your Playlist Id has been submitted. <br>Refresh the website to see added videos.
+            </div>
+		</form>
+        <div id="logout"><a href="{{ url_for('auth.logout') }}"><input  type="button" value="Sign Out"></a></div>
+
+	</div>
+</div>
+
+{% block script %}{% endblock %}
 
 
 

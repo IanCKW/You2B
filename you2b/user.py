@@ -1,11 +1,12 @@
 from flask_login import UserMixin
-
 from datetime import datetime
-
 from .db import get_db
 
+from .database import db_session
+from .database import User as UserSQL
+
 class User(UserMixin):
-    def __init__(self, id_, profile_pic, last_visited):
+    def __init__(self, id_, profile_pic, last_visited, added_playlist): #or remove added_playlist...
         self.id = id_
         self.profile_pic = profile_pic
         self.last_visited = last_visited
@@ -13,33 +14,32 @@ class User(UserMixin):
 
     @staticmethod
     def get(user_id):
-        db = get_db()
-        user = db.execute(
-            "SELECT * FROM user WHERE id = ?", (user_id,)
-        ).fetchone()
+        user = UserSQL.query.filter_by(id=user_id).first()
         if not user:
             return None
-        user = User(id_=user[0], profile_pic=user[1], last_visited=user[2], added_playlist=user[3])
-        return user
+        user_instance = User(
+            user.id,
+            user.profile_pic,
+            user.last_visited,
+            user.added_playlist)
+        return user_instance
 
     @staticmethod
-    def create(id_, profile_pic):
-        db = get_db()
-        db.execute(
-            "INSERT INTO user (id, profile_pic, last_visited, added_playlist) "
-            "VALUES (?, ?, ?, ?)",
-            (id_, profile_pic, "0000-00-00T00:00:00Z", ""),
-        )
-        db.commit()
-    
+    def create(id, profile_pic):
+        user_instance = UserSQL(id, profile_pic, "0000-00-00T00:00:00Z", "")
+        db_session.add(user_instance)
+        db_session.commit()
+
     @staticmethod
     def update_time(user_id):
         visit_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        db = get_db()
-        db.execute(
-            "UPDATE user "
-            "SET last_visited = ? "
-            "WHERE id = ?;",
-            (visit_time, user_id),
-        )
-        db.commit()
+        user_instance = UserSQL.query.filter_by(id=user_id).first()
+        print("visit time: "+ visit_time)
+        user_instance.last_visited = visit_time
+        db_session.commit()
+
+    @staticmethod
+    def update_playlist(user_id, added_playlist):
+        user_instance = UserSQL.query.filter_by(id=user_id).first()
+        user_instance.added_playlist = added_playlist
+        db_session.commit()

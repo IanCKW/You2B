@@ -1,12 +1,12 @@
 body{
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto',Arial, sans-serif;
     margin: 0 auto;
     min-height:100vh;
     position:relative; /*for the footer to stay at the bottom*/
 }
 
 
-input, button{
+input, button, img{
     cursor: pointer;
 }
 
@@ -284,19 +284,46 @@ button.currentPage{
   margin:auto;
   width:95%;
   display:grid;
-  grid-template-columns: repeat(auto-fill, 210px);
+  grid-template-columns: repeat(auto-fill, 270px);
   justify-content:center;
-  grid-gap: 0.25rem;
+  grid-gap: 0.5rem;
   padding-bottom:13.5em; /*to accomodate the footer */
 }
 
 .videoDetails{
   display:inline-block;
-  width : 210px;
-  height: 192px;
+  width : 270px;
+  height: 270px;
 }
 
+.underImg{
+    display:grid;
+    grid-template-columns: 248px 22px;
+}
 
+.textInfo .title{
+    font-weight:450;
+    font-size:14px;
+    margin-bottom:10px;
+    max-height: 45px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+.textInfo .channel{
+    font-weight:400;
+    font-size:12px;
+    color:#606060;
+}
+
+.textInfo .date{
+    text-transform:lower-case;
+    font-weight:400;
+    font-size:12px;
+    color:#606060;
+
+}
 
 .removeButton{
   float: right;
@@ -321,8 +348,8 @@ button.currentPage{
 }
 
 .thumb{
-    width:210px;
-    height: 118px;
+    max-width:100%;
+    max-height:100%;
 }
 
 
@@ -365,6 +392,8 @@ nav span {
     display:flex;
     align-items: center;
     float:right;
+    margin-right:8px;
+    margin-bottom:4px;
 }
 
 nav img{
@@ -372,17 +401,7 @@ nav img{
     border: 2px solid white;
 }
 
-nav input{
-    margin-left: 0.5em;
-    margin-top:0.05em;
-    display: inline-block;
-    width:65px;
-    padding:5px;
-    background: #e66253;
-    color:white;
-    border: none;
-    border-radius:3px;
-}
+
 
 nav input:hover{
 
@@ -423,3 +442,123 @@ nav input:hover{
 }
 
 #footer p{color:#555555;}
+
+
+/*modal*/
+
+.bg-modal {
+	background-color: rgba(0, 0, 0, 0.8);
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	display: none;
+	justify-content: center;
+	justify-items: center;
+	align-items: center;
+}
+
+.modal-contents {
+    color:black;
+	height: 300px;
+	width: 500px;
+	background-color: #e66253;
+	text-align: center;
+	padding: 20px;
+	position: relative;
+	border-radius: 4px;
+}
+
+form{
+    padding-top:2em;
+}
+
+form div{
+    display:flex;
+    display:inline-block;
+}
+
+form input {
+    flex:1;
+	margin: 15px auto;
+	padding: 8px;
+	border:none;
+	border-radius:3px;
+	width:auto;
+}
+
+#pastePID{
+    width:300px;
+}
+
+#submitPID{
+    background:#8E8D8A;
+    color:white;
+}
+#submitPID:hover{
+    background:black;
+    color:white;
+}
+
+#logout{
+    margin-top:5em;
+}
+
+#logout input{
+    width:65px;
+    height:65px;
+    padding:5px;
+    background: #e66253;
+    color:white;
+    border: 2px solid white;
+    border-radius:50%;
+}
+#logout input:hover{
+    border:none;
+    background:black;
+    color:white;
+}
+
+#i{
+    text-decoration:none;
+    color:black
+}
+i {
+    padding-top:2px;
+    margin:auto;
+}
+i:hover {color:white;}
+
+.close {
+	position: absolute;
+	top: 0;
+	right: 10px;
+	font-size: 42px;
+	color: #333;
+	transform: rotate(45deg);
+	cursor: pointer;
+	&:hover {
+		color: #666;
+	}
+}
+
+#submitted{
+    visibility:hidden;
+}
+
+
+/*  GUIDE  */
+
+#go-back{
+    font-weight: bolder;
+    text-decoration:none;
+    color:white;
+}
+
+#guide-text{
+    margin:auto;
+    margin-top: 3em;
+    width:90%;
+    font-weight:lighter;
+}
+

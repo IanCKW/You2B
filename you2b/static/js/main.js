@@ -134,9 +134,14 @@ function display_month() {
     var video =
       '<div id=' + monthData[i]["id"] + ' class="videoDetails"> ' +
         '<a href=' + monthData[i]["link"] + ' target="_blank"> ' +
-            '<img class="thumb" src=' + monthData[i]["img"] + ' width="160" height="90">' +
+            '<img class="thumb" src=' + monthData[i]["img"] + '>' +
         '</a>' +
-        '<div class="buttonContainer">' +
+        '<div class="underImg">' +
+            '<span class="textInfo">' +
+                '<div class="title">'+monthData[i]["video_title"]+'</div>' +
+                '<div class="channel">'+monthData[i]["channel_title"]+'</div>' +
+                '<div class="date">'+date(monthData[i]["datetime"])+'</div>' +
+            '</span>' +
             '<button class="removeButton">-</button>' +
         '</div>' +
       '</div>';
@@ -149,11 +154,24 @@ var monthDict = {
     "08":"AUGUST","09":"SEPTEMBER","10":"OCTOBER","11":"NOVEMBER","12":"DECEMBER",
 }
 
+var monthDictShort = {
+    "01": "Jan", "02": "Feb", "03": "Mar","04":"Apr","05":"May","06":"Jun","07":"Jul",
+    "08":"Aug","09":"Sep","10":"Oct","11":"Nov","12":"Dec",
+}
+
 function monthInLetters(yearMonth){
     var year = yearMonth.slice(0,4);
     var month = yearMonth.slice(5,7);
     var monthRes = monthDict[month];
     return monthRes +" "+ year;
+}
+
+function date(datetime){
+    var month = datetime.slice(5,7);
+    if (datetime.slice(8,9)==="0"){var day = datetime.slice(9,10);}
+    else {var day = datetime.slice(8,10);}
+    var monthRes = monthDictShort[month];
+    return day + " " + monthRes;
 }
 
 
@@ -206,4 +224,15 @@ $(document).on('click', 'input#undo', function() {
     })
   }
   need_button();
+});
+
+
+//modal
+
+document.getElementById('profile-pic').addEventListener("click", function() {
+	document.querySelector('.bg-modal').style.display = "flex";
+});
+
+document.querySelector('.close').addEventListener("click", function() {
+	document.querySelector('.bg-modal').style.display = "none";
 });

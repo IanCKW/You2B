@@ -1,7 +1,8 @@
 # Python standard libraries
-import json
 import os
-import sqlite3
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Date
 
 # Third-party libraries
 from flask import Flask, redirect, request, url_for, g
@@ -13,7 +14,7 @@ from flask_login import (
     logout_user,
 )
 import requests
-from flask_cors import CORS, cross_origin
+
 
 # Internal imports
 from .db import init_db_command
@@ -21,23 +22,8 @@ from .user import User
 
 def create_app(test_config=None):
     # create and configure the app
+
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
-
-    @app.route("/add", methods=["POST"])
-    def added_videos():
-        req = request.get_json()
-        print(req["message"])
-        print("I made it mommy")
-        return req
-
-    @app.after_request
-    def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response
-
 
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -66,12 +52,12 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    @app.before_request
-    def before_request():
-        g.user = current_user
+    # @app.before_request
+    # def before_request():
+    #     g.user = current_user
     
-    from . import db
-    db.init_app(app)
+    # from . import db
+    # db.init_app(app)
     
     from . import auth
     app.register_blueprint(auth.bp)
@@ -80,7 +66,9 @@ def create_app(test_config=None):
     app.register_blueprint(watch.bp)
     app.add_url_rule('/', endpoint='index')
 
-    # CORS(app, support_credentials=True)
-    # app.config['CORS_HEADERS'] = 'Content-Type'
-    
+    from .database import db_session
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
+
     return app
