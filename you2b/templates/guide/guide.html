@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Guide</title>
+</head>
+<body>
+
+<nav>
+    <div><a id="go-back" href="{{ url_for('.index') }}">Go Back</a></div>
+
+</nav>
+
+<div id="guide-text">
+    <div id="features">
+    <h2>Features</h2>
+        <ol>
+            <li>To add videos, see <strong>Connect Playlist</strong> for instructions</li>
+            <li>To remove videos from your feed, simply click the "-" button below it</li>
+            <li>All removed videos will be committed to your account if you change page (month-year buttons at the top), reload the website or logout. </li>
+        </ol>
+    </div>
+    <div id="connect-instructions">
+        <h2> Connect Playlist</h2>
+        <p> Adding a playlist will allow you to continually add videos to your you2b
+        account whenever you are browsing the main YouTube website. Simply create
+        a playlist in your main YouTube account, navigate to your account library ->
+        playlists -> the playlist you would like to connect. Once at the playlist,
+        copy the everything in the url after <strong>list=</strong> and paste it into
+        the bar above.</p>
+
+        <p>Now, whenever you are scrolling through YouTube and you find a video you would
+        like to watch later, you can add it to your connected playlist and that video
+        will show up in your You2B account with the rest of your videos!</p>
+
+        <p>These added videos will be pushed to the front of your feed the first time
+        they are loaded into your account, and they will be assigned the date that they
+        are first loaded in. Thus, they will not clog the front of your custom feed over time.
+        </p>
+    </div>
+</div>
+
+
+<div id="footer">
+        <span></span>
+        <span> <a href="{{ url_for('.about') }}">About</a> </span>
+        <span> <p>|</p> </span>
+        <span> <a href="">Guide</a> </span>
+        <span> <p>|</p> </span>
+        <span> <a href="https://github.com/IanCKW/You2B"target="_blank" >Github</a> </span>
+        <span></span>
+    </div>
+
+</body>
+</html>

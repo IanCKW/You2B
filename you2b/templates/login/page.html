@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <title>you2b</title>
+  </head>
+  <body>
+  <div id="loginPage">
+    <div id="welcomeSign"> Welcome to You2B </div>
+
+    <input type="button" id="loginButton" onclick="login()" value="Sign In with Google">
+
+    <div id="guideSection">
+        <div id="guide">Guide</div>
+
+        <div class="center-con">
+            <div class="round">
+                <div id="cta">
+                    <span class="arrow primera next "></span>
+                    <span class="arrow segunda next "></span>
+                </div>
+            </div>
+        </div>
+        <div id="hidden">
+            <div>Getting In</div>
+            <ol>
+                <li> If you arrive at the "Your connection is not private" page,
+                 click on the "Advanced" button the bottom left</li>
+                <li> A small link will pop up below. Click to proceed</li>
+                <li>Grant all permissions that are requested to use You2B</li>
+            </ol>
+        </div>
+
+    </div>
+  </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+        document.getElementById("hidden").style.display = 'none';
+        function login(){
+            location.href="/login";
+        }
+
+        $(document).on('click', '.round', function(){
+            $(".center-con").empty();
+            document.getElementById("hidden").style.display = 'unset';
+        });
+    </script>
+
+
+</html>

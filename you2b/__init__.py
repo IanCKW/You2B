@@ -1,7 +1,8 @@
 # Python standard libraries
-import json
 import os
-import sqlite3
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Date
 
 # Third-party libraries
 from flask import Flask, redirect, request, url_for, g
@@ -14,13 +15,16 @@ from flask_login import (
 )
 import requests
 
+
 # Internal imports
 from .db import init_db_command
 from .user import User
 
 def create_app(test_config=None):
     # create and configure the app
+
     app = Flask(__name__, instance_relative_config=True)
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'you2b.sqlite'),
@@ -48,12 +52,12 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    @app.before_request
-    def before_request():
-        g.user = current_user
+    # @app.before_request
+    # def before_request():
+    #     g.user = current_user
     
-    from . import db
-    db.init_app(app)
+    # from . import db
+    # db.init_app(app)
     
     from . import auth
     app.register_blueprint(auth.bp)
@@ -61,5 +65,10 @@ def create_app(test_config=None):
     from . import watch
     app.register_blueprint(watch.bp)
     app.add_url_rule('/', endpoint='index')
-    
+
+    from .database import db_session
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
+
     return app

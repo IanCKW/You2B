@@ -26,7 +26,7 @@ from flask_login import (
 from .user import User
 
 # Configuration
-CLIENT_SECRETS_FILE = '' # file name here
+CLIENT_SECRETS_FILE = '.client_secret_file.json'
 SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
