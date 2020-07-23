@@ -89,8 +89,8 @@ def collect_videos(youtube):
         for result in results:
             videos += result
 
-    # Sort and return list of videos.
-    videos = sorted(videos, reverse=True)
+    # # Sort and return list of videos.
+    # videos = sorted(videos, reverse=True)
     return videos
 
 
