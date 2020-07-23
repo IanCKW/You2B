@@ -27,7 +27,7 @@ from .user import User
 
 # Configuration
 CLIENT_SECRETS_FILE = '.client_secret_file.json'
-SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
+SCOPES = ['https://www.googleapis.com/auth/youtube.readonly'] #changes from ...127...
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
 
@@ -47,7 +47,7 @@ def login():
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             CLIENT_SECRETS_FILE, scopes=SCOPES)
 
-    flow.redirect_uri = 'https://127.0.0.1:5000/login/callback'
+    flow.redirect_uri = 'https://you2bflaskapp.herokuapp.com/login/callback'
 
     authorization_url, state = flow.authorization_url(
         # Enable offline access so that you can refresh an access token without
