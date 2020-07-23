@@ -43,4 +43,5 @@ uritemplate==3.0.1
 urllib3==1.25.9
 Werkzeug==1.0.1
 yarl==1.4.2
+setuptools>=40.3.0
 -e git+https://github.com/IanCKW/You2B.git@4d632831a1770f3a30320ce6bca1bcbbfa212056#egg=you2b
