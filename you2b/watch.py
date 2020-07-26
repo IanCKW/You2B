@@ -142,59 +142,58 @@ def get_added(youtube):
     added_videos = []
 
     # Find added-playlist vids already in the database, to exclude those
-    existing_vids = VideoSQL.query.filter(and_(VideoSQL.user_id==current_user.id,VideoSQL.added==1 ))
-    existing_vids_id = [videoSQL.video_id for videoSQL in existing_vids]
+
+    try:
+        existing_vids = VideoSQL.query.filter(and_(VideoSQL.user_id==current_user.id,VideoSQL.added==1 ))
+        existing_vids_id = [videoSQL.video_id for videoSQL in existing_vids]
+        def get_added_page(youtube, token, output):  # recursive function to get ALL vids from this playlist
+            if token:
+                added_playlist_request = youtube.playlistItems().list(
+                    part="snippet",
+                    playlistId=current_user.added_playlist,
+                    maxResults=50,
+                    pageToken=token
+                )
+            else:
+                added_playlist_request = youtube.playlistItems().list(
+                    part="snippet",
+                    playlistId=current_user.added_playlist,
+                    maxResults=50,
+                )
+
+            page_results = []
+
+            # Iterate through added playlist response
+            added_playlist_response = added_playlist_request.execute()
+            for video in added_playlist_response['items']:
+                dateTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+                thumb = video['snippet']['thumbnails']['medium']
+                img = thumb['url']
+                video_id = video['snippet']['resourceId']['videoId']
+                link = "https://www.youtube.com/watch?v=" + video['snippet']['resourceId']['videoId']
+                channel_title = video['snippet']['channelTitle']
+                video_title = video['snippet']['title']
+                # Only add the video if it's not already in the database
 
 
+                if video_id not in existing_vids_id:
 
-    def get_added_page(youtube, token, output):  # recursive function to get ALL vids from this playlist
-        if token:
-            added_playlist_request = youtube.playlistItems().list(
-                part="snippet",
-                playlistId="PLTuqYR0_eatnezIOhxhDJbATe4hj1Owp_",
-                maxResults=50,
-                pageToken=token
-            )
-        else:
-            added_playlist_request = youtube.playlistItems().list(
-                part="snippet",
-                playlistId="PLTuqYR0_eatnezIOhxhDJbATe4hj1Owp_",
-                maxResults=50,
-            )
+                    page_results.append([dateTime, video_id, link, img, channel_title, video_title])
+            # append results from this page to the passed output
+            passed_output = output + page_results
 
-        page_results = []
+            if 'nextPageToken' in added_playlist_response:
+                nextPage = added_playlist_response['nextPageToken']
+                return get_added_page(youtube, nextPage, passed_output)
+            else:
 
-        # Iterate through added playlist response
-        added_playlist_response = added_playlist_request.execute()
-        for video in added_playlist_response['items']:
-            dateTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-            thumb = video['snippet']['thumbnails']['medium']
-            img = thumb['url']
-            video_id = video['snippet']['resourceId']['videoId']
-            link = "https://www.youtube.com/watch?v=" + video['snippet']['resourceId']['videoId']
-            channel_title = video['snippet']['channelTitle']
-            video_title = video['snippet']['title']
-            # Only add the video if it's not already in the database
+                return passed_output
 
-
-            if video_id not in existing_vids_id:
-
-                page_results.append([dateTime, video_id, link, img, channel_title, video_title])
-        # append results from this page to the passed output
-        passed_output = output + page_results
-
-        if 'nextPageToken' in added_playlist_response:
-            nextPage = added_playlist_response['nextPageToken']
-            return get_added_page(youtube, nextPage, passed_output)
-        else:
-
-            return passed_output
-
-    added_videos = get_added_page(youtube, "", [])
-
-    print("added: " + str(len(added_videos)))  # debug
-    return added_videos
-
+        added_videos = get_added_page(youtube, "", [])
+        print("added: " + str(len(added_videos)))  # debug
+        return added_videos
+    except:
+        return []
 
 # creating dictionaries for each vid and storing them in lists by month, with the month as the key of the parent dictionary
 def videos_by_month(all_videos):
