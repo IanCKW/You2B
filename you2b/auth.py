@@ -2,6 +2,7 @@
 import os
 import requests
 from random import randint
+from pathlib import Path
 
 # OAuth2
 import google.oauth2.credentials
@@ -30,7 +31,8 @@ from .user import User
 TOTAL_SECRET_FILES = 1 # edit to number of json files available
 SECRET_FILE_NUM = randint(0, TOTAL_SECRET_FILES - 1)
 SECRET_FILE_NAME = 'client_secret_file_' + str(SECRET_FILE_NUM) + '.json'
-CLIENT_SECRETS_FILE = os.path.join(os.path.dirname(__file__), SECRET_FILE_NAME) # changes from the whole thing
+
+CLIENT_SECRETS_FILE = Path(__file__).parent + SECRET_FILE_NAME # changes from the whole thing
 SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
