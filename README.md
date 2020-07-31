@@ -1,7 +1,7 @@
 # You2B
 Guanchanamobae's orbital project
 
-Live website: https://you2bflaskapp.herokuapp.com/
+Live website:(UPDATE: on 2nd Aug 2020, app will be disabled as we have exceeded the free database quota on Heroku) https://you2bflaskapp.herokuapp.com/
 
 Project details: https://docs.google.com/document/d/1rfnQy6djHDkmOGE9DHQAah7-P613Gzr22gHXo0P1y0k/edit?usp=sharing
 
