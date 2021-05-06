@@ -9,7 +9,7 @@ chardet==3.0.4
 click==7.1.2
 cryptography==2.9.2
 Flask==1.1.2
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 Flask-Login==0.5.0
 Flask-SQLAlchemy==2.4.4
 google-api-core==1.21.0
